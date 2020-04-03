@@ -1,4 +1,5 @@
 :tocdepth: 1
+
 .. sectnum::
 
 Abstract
@@ -35,18 +36,55 @@ Implementation
 ==============
 
 The simulator will be provided as a set of Docker containers and a
-``docker-compose`` file for coordinating those containers. Those containers will
-be:
+``docker-compose`` file for coordinating those containers. To run the simulator,
+the user spins up the docker containers, and then runs a command which starts
+the flow of data. The data comes from a directory with serialized alert data on
+disk, and is paced into the containerized Kafka broker to match the expected
+rate for Rubin. The data will be repeated indefinitely, with timestamps
+adjusted, so that long-term behavior can be observed, even if only a few minutes
+of source data is available.
+
+Alert data will be serialized using the latest Avro alert event schema. The Avro
+schema specification used will be provided along with the containers.
+
+Docker
+------
+
+These containers will be provided:
 
  - A Kafka container, which runs the broker
  - A Zookeeper container, which the broker connects to for backend state management
  - A monitoring container, which provides a web-based UI verify that the stream
    is being fully handled
+ - An injector container, which hosts a command that sends data to the broker
 
-.. note::
-   More to come in this section.
+The Kafka broker and monitoring containers will be addressable from the host
+running the containers so that the user can consume the stream and check metrics
+easily.
 
+Injector and Data Rates
+-----------------------
 
+The injector sends data to the broker. It should consume a directory on disk,
+and will repeat the data it finds there indefinitely.
+
+It will attempt to send data at a realistic rate, and will have options to
+increase the rate.
+
+By default, the "realistic rate" will be to send approximately 10,000 events
+every 37 seconds. The events will be sent over a 3 second period, emitted in 189
+bursts, each with a random number of events between 10 and 200 (centered at 50).
+This emulates a plausible data rate for Rubin's 189 data-producing CCDs.
+
+In addition, the rate can altered by changing the transmission period of 3s, and
+by scaling the number of events sent per burst.
+
+Documentation
+-------------
+
+Documentation will be provided in the repository as ReStructured text documents.
+Specifically, documentation will be provided for running the fleet of
+containers, injecting data, and monitoring the flow of data.
 
 Known Limitations
 =================
@@ -118,8 +156,13 @@ provide that hardware to community broker developers. They will need to run the
 simulator on hardware which is capable of producing the full stream without
 running into bottlenecks. For example, if the simulator is run on an
 underpowered laptop, it might not produce the stream at the full volume due to a
-CPU bottleneck. We could provide tools to let the user know if this is
-happening, or provide documented guidance on how to detect it.
+CPU bottleneck.
+
+DMTN-028 :cite:`DMTN-028` investigated hardware requirements for brokers and
+estimated that each broker requires about 40-80GB of memory and at least 24
+cores for compute. We could provide tools to let the user know if their broker
+configuration is not able to handle the full stream, and/or provide tools to
+deploy the set of containers to a cloud provider.
 
 
 Network
