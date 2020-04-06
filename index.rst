@@ -57,6 +57,9 @@ These containers will be provided:
  - A monitoring container, which provides a web-based UI verify that the stream
    is being fully handled
  - An injector container, which hosts a command that sends data to the broker
+ - A demonstrative consumer container, which receives alerts and merely prints
+   the number it has consumed; users could potentially modify this for their own
+   code
 
 The Kafka broker and monitoring containers will be addressable from the host
 running the containers so that the user can consume the stream and check metrics
