@@ -20,7 +20,7 @@ High-level goals
 ================
 
 A simulator will help groups who are developing community brokers which
-republish Rubin's alert stream. It will provide a realistic benchmark for the
+receive Rubin's alert stream. It will provide a realistic benchmark for the
 load they should expect to receive, and will act as a harness for them to run
 tests.
 
@@ -69,7 +69,7 @@ The injector sends data to the broker. It should consume a directory on disk,
 and will repeat the data it finds there indefinitely.
 
 It will attempt to send data at a realistic rate, and will have options to
-increase the rate.
+modify the rate.
 
 By default, the "realistic rate" will be to send approximately 10,000 events
 every 37 seconds. The events will be sent over a 3 second period, emitted in 189
@@ -113,7 +113,7 @@ impose additional CPU load on consumers of the stream, but lower the network
 bandwidth requirements. It could have a complicated effect on memory pressure
 which is hard to predict.
 
-Making compression an optional feature of the simulation could help us received
+Making compression an optional feature of the simulation could help us receive
 feedback from community broker developers on the effects it has in practice.
 
 Alert Format
@@ -133,7 +133,7 @@ Alert Contents
 --------------
 
 Some community brokers plan to modify or filter the alert stream. We don't yet
-have scientifically meaningful data to populate the alert stream, though. This
+have large quantities of scientifically meaningful alerts, though. This
 means that any filters may not be receiving a realistic workload.
 
 Broker Configuration Details
