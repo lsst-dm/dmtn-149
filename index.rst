@@ -39,10 +39,10 @@ The simulator will be provided as a set of Docker containers and a
 ``docker-compose`` file for coordinating those containers. To run the simulator,
 the user spins up the docker containers, and then runs a command which starts
 the flow of data. The data comes from a directory with serialized alert data on
-disk, and is paced into the containerized Kafka broker to match the expected
-rate for Rubin. The data will be repeated indefinitely, with timestamps
-adjusted, so that long-term behavior can be observed, even if only a few minutes
-of source data is available.
+disk, and can be paced into the containerized Kafka broker to match the expected
+rate for Rubin. The details of the pacing and the strategy are configurable,
+with defaults provided that match our current expectations for Rubin's alert
+volume.
 
 Alert data will be serialized using the latest Avro alert event schema. The Avro
 schema specification used will be provided along with the containers.
@@ -68,19 +68,28 @@ easily.
 Injector and Data Rates
 -----------------------
 
-The injector sends data to the broker. It should consume a directory on disk,
-and will repeat the data it finds there indefinitely.
+The injector sends data to the broker.
 
-It will attempt to send data at a realistic rate, and will have options to
-modify the rate.
+The data injection mechanism will be configurable, running in either
+"single-pass" or "infinite" mode. In single-pass mode, it loads data from a
+directory on disk and then terminates, obeying the data's timestamps for pacing.
+In infinite mode, it repeats the data on disk indefinitely, with timestamps and
+ID numbers adjusted, so that long-term behavior can be observed.
+
+In infinite mode, the simulator will (by default) attempt to send data at a
+realistic rate, disregarding the timestamps of the events on disk. The user can
+provide configuration to instead obey the timestamps, repeating them with an
+offset.
 
 By default, the "realistic rate" will be to send approximately 10,000 events
 every 37 seconds. The events will be sent over a 3 second period, emitted in 189
-bursts, each with a random number of events between 10 and 200 (centered at 50).
-This emulates a plausible data rate for Rubin's 189 data-producing CCDs.
+bursts, grouped by ``ccdVisitId``. Each burst will have a random number of
+events between 10 and 200 (centered at 50). This emulates a plausible data rate
+for Rubin's 189 data-producing CCDs.
 
-In addition, the rate can altered by changing the transmission period of 3s, and
-by scaling the number of events sent per burst.
+This rate will be configurable. The transmission period, number of bursts, and
+number of events per burst can all be set by the user, letting them explore
+different scenarios.
 
 Documentation
 -------------
