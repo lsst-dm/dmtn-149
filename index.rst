@@ -5,9 +5,6 @@
 Abstract
 ========
 
-.. note::
-   **This technote is not yet published.**
-
 This document describes a program which simulates Rubin's Alert Distribution
 System :cite:`DMTN-093`. This simulator would be useful for development of
 community brokers: it would provide a realistic target for the throughput and
